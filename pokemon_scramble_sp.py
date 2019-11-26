@@ -6,10 +6,13 @@ __author__ = 'Erimus'
 # 先要把模拟器下adb所在目录加入环境变量
 # 确认下截图为720x1280（设置/分辨率/自定义）
 # 使用极速模式 DirectX 颜色和其它模式会有所不同
+# 先启动夜神模拟器，然后运行本程序。
+# TODO 因为每日任务需要手动领一下，所以齿轮装满还未自动处理。
 
 import uiautomator2
 import subprocess
-from erimus.toolbox import *
+import re
+from toolbox import set_log, FS, CSS, Timer, time, countdown, formatJSON, beep
 from random import randint as rdm
 
 # ═══════════════════════════════════════════════
@@ -88,12 +91,8 @@ def click(x, y, info='', wait=0):
     time.sleep(wait)
 
 
-def wait(sec):
-    time.sleep(sec)
-
-
 def debug():
-    wait(3)
+    time.sleep(3)
     screen_capture(save=1)
     raise
 
@@ -141,7 +140,7 @@ def has_surprise():
                 'endX': firstMarkPostion[0] + h * xGap + size[0],
                 'endY': firstMarkPostion[1] + v * yGap + size[1],
             })
-    # printFormatJSON(searchRange)
+    # print(formatJSON(searchRange))
     for r in searchRange:
         for x in range(r['startX'], r['endX']):
             for y in range(r['startY'], r['endY']):
@@ -286,7 +285,7 @@ def play_game():  # 寻找起点和终点坐标
         if float(battleTm.total()) > 40:  # 战斗超过一定时间，可能到达boss处。
             click(620, 1180)  # 技能
             click(320, 640)  # 最下面的关卡
-        wait(5)  # 按太快了影响走路速度
+        time.sleep(5)  # 按太快了影响走路速度
 
     # 矿石界面
     elif ui.stone():
@@ -330,7 +329,7 @@ def main():
             try:
                 start_game(package_name, force=True)
             except Exception as e:
-                beep()
+                beep(1)
                 raise e
 
 
