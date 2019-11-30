@@ -12,6 +12,7 @@ __author__ = 'Erimus'
 import uiautomator2
 import subprocess
 import re
+import os
 from toolbox import set_log, FS, CSS, Timer, time, countdown, formatJSON, beep
 from random import randint as rdm
 
@@ -26,6 +27,8 @@ explore = 1         # 是否探索新关卡/0为自动重复进行指定关卡
 stage = 1           # 默认选择第N个关卡
 
 stageY = 680 + (100 * stage)
+
+SHOW_CHECK_COLOR_LOG = 0  # 是否打印确认点的信息
 # ═══════════════════════════════════════════════
 
 
@@ -59,8 +62,9 @@ def screen_capture(save=0):
     im_pixel = im.load()
     # im.show()
     if save:
-        im.save('screen_shot/sc.png')
-    log.info(CSS(f'{"Screen capture took":-<25s} {tm.gap()}', 'lk'))
+        HERE = os.path.abspath(os.path.dirname(__file__))
+        im.save(os.path.join(HERE, 'screen_shot/sc.png'))
+    log.info(CSS(f'{"Screen capture took ":-<25s} {tm.gap()}', 'lk'))
 
 
 def check_point(pos, color, tolerance=20, showLog=0):  # 棋子取色精确范围
@@ -74,7 +78,7 @@ def check_point(pos, color, tolerance=20, showLog=0):  # 棋子取色精确范�
             and (b - i < src[2] < b + i))
 
 
-def check_match(*conditionList, tolerance=20, showLog=0):
+def check_match(*conditionList, tolerance=20, showLog=SHOW_CHECK_COLOR_LOG):
     # 标准输入格式为(([x,y],[r,g,b]),...)
     if not isinstance(conditionList[0], tuple):  # 简化输入 [x,y],[r,g,b] 转换
         conditionList = [conditionList]
@@ -103,22 +107,23 @@ def debug():
 class UI():
 
     def home(self):  # 等待出击
-        return check_match(([100, 200], [38, 172, 207]),     # 选单
-                           ([360, 1170], [40, 165, 211]),    # 冒险上的蓝色方块
+        return check_match(([100, 200], [38, 172, 207]),    # 选单
+                           ([360, 1170], [40, 165, 211]),   # 冒险上的蓝色方块
                            ([360, 1182], [255, 255, 255]))  # 冒险上的白色区域
 
     def select_stage(self):  # 选择关卡
-        return check_match(([666, 150], [243, 207, 10]),     # 右上角123
+        return check_match(([666, 150], [243, 207, 10]),    # 右上角123
+                           ([630, 150], [0, 179, 255]),     # 123左侧蓝框
                            ([420, 1240], [251, 118, 146]))  # 返回按钮红色
 
     def stone(self):  # 矿石
-        return check_match(([360, 130], [163, 245, 245]),    # 蓝框顶部
+        return check_match(([360, 130], [163, 245, 245]),   # 蓝框顶部
                            ([420, 1210], [251, 116, 146]))  # 返回按钮红色
 
     def battle(self):  # 战斗中
-        return check_match(([55, 1140], [40, 165, 211]),   # 替换左耳尖
-                           ([145, 1150], [40, 165, 211]),  # 替换右耳尖
-                           ([360, 1236], [0, 160, 255]))  # 底部蓝色蓄力条
+        return check_match(([55, 1100], [40, 165, 211]),    # 替换左耳尖
+                           ([145, 1110], [40, 165, 211]),   # 替换右耳尖
+                           ([360, 1196], [0, 160, 255]))    # 底部蓝色蓄力条
 
 
 ui = UI()
@@ -128,7 +133,7 @@ ui = UI()
 
 
 def has_surprise():
-    firstMarkPostion = (200, 260)  # 第一个感叹号左上角的位置
+    firstMarkPostion = (200, 240)  # 第一个感叹号左上角的位置
     xGap, yGap = 210, 240  # 间距
     size = (40, 40)  # 感叹号的大小
     searchRange = []
@@ -283,7 +288,7 @@ def play_game():  # 寻找起点和终点坐标
     elif ui.battle():
         log.info(CSS(f'战斗中 {battleTm.total()}', 'r'))
         if float(battleTm.total()) > 40:  # 战斗超过一定时间，可能到达boss处。
-            click(620, 1180)  # 技能
+            click(620, 1140)  # 技能
             click(320, 640)  # 最下面的关卡
         time.sleep(5)  # 按太快了影响走路速度
 
@@ -324,7 +329,8 @@ def main():
     while True:
         try:
             play_game()
-        except Exception:
+        except Exception as e:
+            print(repr(e))
             # restart game
             try:
                 start_game(package_name, force=True)
