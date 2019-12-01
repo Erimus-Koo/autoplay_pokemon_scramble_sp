@@ -133,7 +133,7 @@ ui = UI()
 
 
 def has_surprise():
-    firstMarkPostion = (200, 240)  # 第一个感叹号左上角的位置
+    firstMarkPostion = (200, 250)  # 第一个感叹号左上角的位置
     xGap, yGap = 210, 240  # 间距
     size = (40, 40)  # 感叹号的大小
     searchRange = []
@@ -149,8 +149,8 @@ def has_surprise():
     for r in searchRange:
         for x in range(r['startX'], r['endX']):
             for y in range(r['startY'], r['endY']):
-                if check_match([x, y], [241, 17, 71], tolerance=10, showLog=0):  # 找到红色
-                    if check_match([x + 10, y], [255, 255, 255], tolerance=5, showLog=0):  # 找到右侧白色
+                if check_match([x, y], [255, 0, 0], showLog=0):  # 找到红色
+                    if check_match([x + 10, y], [255, 255, 255], showLog=0):  # 找到右侧白色
                         log.info(CSS(f'Found Surprise Mark ❗ {x}|{y}', 'r'))
                         return x, y
 
@@ -163,7 +163,7 @@ def stone_page():
         if surprise:  # 如果有完成的矿石
             sx, sy = surprise
             click(sx - 60, sy + 60, CSS('领取完成的矿石', 'y'), wait=3)
-            click(360, 810, CSS('确认领取', 'y'), wait=5)
+            click(360, 890, CSS('确认领取', 'y'), wait=5)
             while True:
                 loop_count += 1
                 screen_capture()
@@ -174,8 +174,8 @@ def stone_page():
             # 开发新的矿石
             newX = 360 if sx < 270 else 150  # 避开刚领取的矿石
             click(newX, 300, CSS('点击矿石', 'y'), wait=3)
-            click(360, 800, CSS('开始加工', 'y'), wait=10)
-            click(360, 1120, CSS('矿石界面 关闭', 'y'), wait=3)
+            click(360, 890, CSS('开始加工', 'y'), wait=10)
+            click(360, 1190, CSS('关闭加工页面', 'y'), wait=3)
         elif check_match(([360, 1055], [0, 146, 237])):  # 垃圾桶盖子
             click(360, 1055, CSS('矿石界面（有垃圾桶）', 'y'), wait=5)   # 点垃圾桶
             click(500, 700, CSS('确认丢弃', 'y'), wait=5)
