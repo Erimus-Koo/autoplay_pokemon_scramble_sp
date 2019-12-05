@@ -230,19 +230,20 @@ def send_pokemon():
     loop_count = 0
     send = 0
     screen_capture()  # 获取截图
-    if check_match(([515, 175], [213, 231, 233]),           # 正三角左上白色
+    if check_match(([515, 175], [213, 231, 233]),  # 正三角左上白色
                    ([515, 195], [31, 145, 250])):  # 正三角左下蓝色
         click(530, 190, '倒序排列')
     while send < 2:
         loop_count += 1
         screen_capture()  # 获取截图
-        if check_match(([360, 15], [130, 227, 247]),              # 精灵球背景
+        if check_match(([360, 15], [130, 227, 247]),     # 精灵球背景
                        ([420, 1200], [250, 120, 150])):  # 底部的关闭
             click(210, 180, '选择100', wait=2)
         elif check_match([520, 1200], [89, 247, 146]):  # 赠送按钮
             click(360, 1200, '送往协会', wait=2)
-        elif check_match([520, 750], [79, 242, 137]):  # 确定按钮
-            click(520, 750, '确认', wait=5)
+        elif (check_match([520, 750], [79, 242, 137])       # 确定按钮
+              or check_match([520, 767], [79, 242, 137])):  # 确定按钮(齿轮)
+            click(520, 745, '确认', wait=5)
         elif check_match([400, 730], [84, 242, 141]):  # OK按钮
             click(360, 720, '回执', wait=2)
             send += 0.5  # 回执会收到两份
