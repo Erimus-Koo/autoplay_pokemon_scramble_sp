@@ -29,6 +29,10 @@ stage = 1           # 默认选择第N个关卡
 stageY = 680 + (100 * stage)
 
 SHOW_CHECK_COLOR_LOG = 0  # 是否打印确认点的信息
+
+# 羽毛投放范围
+RX1, RX2, RY1, RY2 = 80, 640, 310, 870  # full area
+RX1, RX2, RY1, RY2 = 130, 240, 550, 660  # specific
 # ═══════════════════════════════════════════════
 
 
@@ -53,6 +57,7 @@ def start_game(package_name, force=False):
         sess.restart()
         log.warning(f'Restart: {package_name}')
         countdown(120)
+    click(600, 685, '关闭 Google Play 提示框', wait=3)
 
 
 def screen_capture(save=0):
@@ -173,7 +178,7 @@ def stone_page():
             log.info(CSS('矿石领取完成', 'g'))
             # 开发新的矿石
             newX = 360 if sx < 270 else 150  # 避开刚领取的矿石
-            click(newX, 300, CSS('点击矿石', 'y'), wait=3)
+            click(newX, 300, CSS('点击矿石', 'y'), wait=5)
             click(360, 890, CSS('开始加工', 'y'), wait=10)
             click(360, 1190, CSS('关闭加工页面', 'y'), wait=3)
         elif check_match(([360, 1055], [0, 146, 237])):  # 垃圾桶盖子
@@ -204,7 +209,7 @@ def stage_page():
 
         # 投放羽毛界面
         elif check_match([450, 960], [255, 255, 255]):
-            rx, ry = rdm(80, 640), rdm(310, 870)  # 全地图范围
+            rx, ry = rdm(RX1, RX2), rdm(RY1, RY2)  # 全地图范围
             # rx, ry = rdm(280, 480), rdm(800, 880)  # 指定地区
             click(rx, ry, f'搜索 {rx} {ry}', wait=5)
 
