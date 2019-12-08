@@ -10,8 +10,6 @@ __author__ = 'Erimus'
 # TODO 因为每日任务需要手动领一下，所以齿轮装满还未自动处理。
 
 import uiautomator2
-import subprocess
-import re
 import os
 from toolbox import set_log, FS, CSS, Timer, time, countdown, formatJSON, beep
 from random import randint as rdm
@@ -37,13 +35,16 @@ RX1, RX2, RY1, RY2 = 130, 240, 550, 660  # specific
 
 
 def get_device():
-    process = subprocess.Popen('adb devices', shell=True, stdout=subprocess.PIPE)
-    r = process.stdout.read()
-    device = re.findall(r'127\.0\.0\.1:\d+', str(r))[0]
-    print(f'device: {device}')
-
     global d
-    d = uiautomator2.connect_adb_wifi(device)  # connect to device
+    # 这里的端口号可以用 adb devices 查看。我的是第2个模拟器开始25，第3个26。
+    # 强制用端口号连接，有时候在 adb devices 找不到设备时仍可强制连接。
+    for port in range(62025, 62030):
+        device = f'127.0.0.1:{port}'
+        try:
+            d = uiautomator2.connect_adb_wifi(device)  # connect to device
+            break
+        except Exception:
+            pass
     log.info(formatJSON(d.info))
 
 
@@ -57,7 +58,7 @@ def start_game(package_name, force=False):
         sess.restart()
         log.warning(f'Restart: {package_name}')
         countdown(120)
-    click(600, 685, '关闭 Google Play 提示框', wait=3)
+    click(600, 685, '关闭 Google Play 提示框')
 
 
 def screen_capture(save=0):
@@ -167,14 +168,14 @@ def stone_page():
         surprise = has_surprise()
         if surprise:  # 如果有完成的矿石
             sx, sy = surprise
-            click(sx - 60, sy + 60, CSS('领取完成的矿石', 'y'), wait=3)
+            click(sx - 60, sy + 60, CSS('领取完成的矿石', 'y'), wait=5)
             click(360, 890, CSS('确认领取', 'y'), wait=5)
             while True:
                 loop_count += 1
                 screen_capture()
                 if ui.stone() or loop_count > 100:
                     break
-                click(360, 810, CSS('确认道具', 'y'), wait=3)
+                click(360, 890, CSS('确认道具', 'y'), wait=3)
             log.info(CSS('矿石领取完成', 'g'))
             # 开发新的矿石
             newX = 360 if sx < 270 else 150  # 避开刚领取的矿石
