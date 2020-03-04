@@ -30,7 +30,7 @@ SHOW_CHECK_COLOR_LOG = 0  # 是否打印确认点的信息
 
 # 羽毛投放范围
 RX1, RX2, RY1, RY2 = 80, 640, 310, 870  # full area
-RX1, RX2, RY1, RY2 = 130, 240, 550, 660  # specific
+# RX1, RX2, RY1, RY2 = 130, 240, 550, 660  # specific
 # ═══════════════════════════════════════════════
 
 
@@ -294,7 +294,7 @@ def play_game():  # 寻找起点和终点坐标
     # 战斗中
     elif ui.battle():
         log.info(CSS(f'战斗中 {battleTm.total()}', 'r'))
-        if float(battleTm.total()) > 40:  # 战斗超过一定时间，可能到达boss处。
+        if float(battleTm.total()) > 35:  # 战斗超过一定时间，可能到达boss处。
             click(620, 1140)  # 技能
             click(320, 640)  # 最下面的关卡
         time.sleep(5)  # 按太快了影响走路速度
